@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三体三部曲在线阅读</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #f5f1e6;
+            color: #4a3c24;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(245, 241, 230, 0.9) 96%, #d4c9a8 96%, #d4c9a8 100%),
+                url("data:image/svg+xml;charset=utf-8,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm41 39c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM35 6c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z' fill='%23d4c9a8' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            position: relative;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #d4c9a8, transparent);
+        }
+        h1 {
+            font-size: 2.8rem;
+            color: #5e4a32;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7a6d53;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .book-card {
+            background: #fffaf0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid #e8dfc8;
+        }
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        .book-cover {
+            height: 400px;
+            background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M5 5v20h20V5H5zm20 40v20h20V45H25zM5 45v20h20V45H5z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .earth-mission::before {
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08' fill-rule='evenodd'%3E%3Cpath d='M5 5v20h20V5H5zm20 40v20h20V45H25zM5 45v20h20V45H5z'/%3E%3C/g%3E%3C/svg%3E"), radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 20%);
+        }
+        .dark-forest::before {
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08' fill-rule='evenodd'%3E%3Cpath d='M5 5v20h20V5H5zm20 40v20h20V45H25zM5 45v20h20V45H5z'/%3E%3C/g%3E%3C/svg%3E"), radial-gradient(circle at 70% 70%, rgba(255,255,255,0.2) 0%, transparent 25%);
+        }
+        .eternal-death::before {
+            background: url("data:image/svg+xml;charset=utf-8,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.08' fill-rule='evenodd'%3E%3Cpath d='M5 5v20h20V5H5zm20 40v20h20V45H25zM5 45v20h20V45H5z'/%3E%3C/g%3E%3C/svg%3E"), radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 30%);
+        }
+        .book-info {
+            padding: 25px;
+        }
+        .book-title {
+            font-size: 1.8rem;
+            color: #5e4a32;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .book-description {
+            color: #6a5d48;
+            margin-bottom: 20px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        .read-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to bottom, #8b4513, #5d2a00);
+            color: #fffaf0;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: 1px solid #7a3a00;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .read-button:hover {
+            background: linear-gradient(to bottom, #9c5218, #6a3000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .reading-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+        .book-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .book {
+            width: 80%;
+            max-width: 900px;
+            height: 85%;
+            background: #f8f4e9;
+            border-radius: 4px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 2000px;
+        }
+        .book-cover-front, .book-cover-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: #8b4513;
+            color: #fffaf0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            backface-visibility: hidden;
+            border-radius: 4px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        .book-cover-front {
+            background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+            z-index: 20;
+        }
+        .book-cover-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #5d2a00 0%, #3a1a00 100%);
+        }
+        .book-title-large {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+        .book-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 80%;
+            line-height: 1.6;
+        }
+        /* 单页翻页模式 - 替代原有的双页布局 */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            background: #f8f4e9;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            padding: 30px;
+            z-index: 5;
+            transition: transform 0.4s ease;
+        }
+        .page.flipping {
+            transform: scale(0.98);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+        .page-content {
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .page-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .page-content::-webkit-scrollbar-track {
+            background: #f0e8d5;
+        }
+        .page-content::-webkit-scrollbar-thumb {
+            background: #d4c9a8;
+            border-radius: 3px;
+        }
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #a89c84;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        .prev-button {
+            left: 15px;
+        }
+        .next-button {
+            right: 15px;
+        }
+        .close-reading {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 30;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .close-reading:hover {
+            background: rgba(255, 0, 0, 0.4);
+            transform: rotate(90deg);
+        }
+        .toc-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 30;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .toc-button:hover {
+            background: rgba(139, 69, 19, 0.5);
+        }
+        .table-of-contents {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100%;
+            background: #fffaf0;
+            z-index: 1050;
+            transition: right 0.4s ease;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            border-left: 1px solid #e8dfc8;
+        }
+        .table-of-contents.open {
+            right: 0;
+        }
+        .toc-header {
+            padding: 20px;
+            background: #8b4513;
+            color: #fffaf0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .toc-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .toc-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fffaf0;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .toc-list {
+            list-style: none;
+            padding: 0 20px;
+        }
+        .toc-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e8dfc8;
+        }
+        .toc-list li a {
+            color: #5e4a32;
+            text-decoration: none;
+            display: block;
+            transition: all 0.2s;
+            padding: 5px 10px;
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+        .toc-list li a:hover {
+            background: #f0e8d5;
+            color: #8b4513;
+        }
+        .toc-chapter {
+            font-weight: bold;
+            color: #5e4a32;
+            margin-bottom: 5px;
+        }
+        .toc-section {
+            color: #7a6d53;
+            font-size: 0.95rem;
+            padding-left: 15px;
+        }
+        .parchment-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(245, 241, 230, 0.9) 96%, #d4c9a8 96%, #d4c9a8 100%),
+                url("data:image/svg+xml;charset=utf-8,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm41 39c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM35 6c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z' fill='%23d4c9a8' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            z-index: -1;
+        }
+        .reading-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #e8dfc8;
+            padding: 10px 30px;
+            text-align: center;
+            color: #5e4a32;
+            font-size: 0.9rem;
+            border-top: 1px solid #d4c9a8;
+        }
+        .progress-bar {
+            height: 4px;
+            background: #d4c9a8;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress {
+            height: 100%;
+            background: #8b4513;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        @media (max-width: 768px) {
+            .book-grid {
+                grid-template-columns: 1fr;
+            }
+            .book {
+                width: 95%;
+                height: 85%;
+            }
+            .book-container {
+                padding: 10px;
+            }
+            .page {
+                padding: 20px 15px;
+            }
+            .book-title-large {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .book {
+                height: 90%;
+            }
+            .book-title-large {
+                font-size: 1.6rem;
+            }
+            .book-description {
+                font-size: 0.95rem;
+            }
+            .page-number {
+                font-size: 0.8rem;
+            }
+        }
+        /* 仿真翻页效果关键帧 */
+        @keyframes flipEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+        .page.flipping {
+            animation: flipEffect 0.4s;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #5e4a32;
+            font-size: 1.2rem;
+            background: rgba(248, 244, 233, 0.9);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .loading::after {
+            content: '.';
+            animation: dots 1.5s infinite;
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="parchment-bg"></div>
+    <div class="container">
+        <header>
+            <h1>三体三部曲</h1>
+            <p class="subtitle">在这里体验刘慈欣笔下的宇宙史诗，感受人类文明与三体文明的碰撞，探索宇宙社会学的黑暗森林法则，见证文明的存续与毁灭。</p>
+        </header>
+        <div class="book-grid">
+            <div class="book-card">
+                <div class="book-cover earth-mission">
+                    <div>
+                        <h2>地球往事</h2>
+                        <p style="font-size: 0.9rem; margin-top: 15px; opacity: 0.8;">第一部 | 2006年出版</p>
+                    </div>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">地球往事</h3>
+                    <p class="book-description">《地球往事》是"三体"系列的第一部，讲述了地球文明与三体文明的初次接触。文化大革命时期，天文学家叶文洁向宇宙发出地球文明信号，导致三体文明发现地球，从而引发两个文明之间的接触与冲突。</p>
+                    <a href="#" class="read-button" data-book="地球往事.pdf">开始阅读</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover dark-forest" style="background: linear-gradient(135deg, #0a3d1a 0%, #001a0b 100%);">
+                    <div>
+                        <h2>黑暗森林</h2>
+                        <p style="font-size: 0.9rem; margin-top: 15px; opacity: 0.8;">第二部 | 2008年出版</p>
+                    </div>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">黑暗森林</h3>
+                    <p class="book-description">《黑暗森林》是"三体"系列的第二部，深入探讨了宇宙文明间的"黑暗森林"法则。面对三体文明的威胁，人类启动"面壁计划"，罗辑最终领悟了宇宙社会学的真相，成为执剑人守护地球文明。</p>
+                    <a href="#" class="read-button" data-book="黑暗森林.pdf">开始阅读</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover eternal-death" style="background: linear-gradient(135deg, #1a3d5a 0%, #0a1a2a 100%);">
+                    <div>
+                        <h2>死神永生</h2>
+                        <p style="font-size: 0.9rem; margin-top: 15px; opacity: 0.8;">第三部 | 2010年出版</p>
+                    </div>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">死神永生</h3>
+                    <p class="book-description">《死神永生》是"三体"系列的第三部，讲述了宇宙的终极命运。程心成为第二代执剑人，随后人类文明面临降维打击，宇宙开始归零重启，最终在新宇宙中重获新生。</p>
+                    <a href="#" class="read-button" data-book="死神永生.pdf">开始阅读</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="reading-view" id="readingView">
+        <div class="book-container">
+            <div class="book" id="book">
+                <div class="book-cover-front">
+                    <h2 class="book-title-large" id="coverTitle">地球往事</h2>
+                    <p class="book-subtitle">三体系列第一部 | 刘慈欣 著</p>
+                </div>
+                <div class="book-cover-back">
+                    <h2 class="book-title-large">阅读完成</h2>
+                    <p class="book-subtitle">感谢您阅读《三体》系列，宇宙的真相永远值得探索</p>
+                </div>
+                <!-- 修改为单页显示 -->
+                <div class="page" id="page">
+                    <div class="page-content" id="pageContent">
+                        <div class="loading">加载PDF内容</div>
+                    </div>
+                    <div class="page-number">第 <span id="pageNumber">1</span> 页</div>
+                </div>
+            </div>
+            <button class="prev-button nav-button" id="prevButton"><</button>
+            <button class="next-button nav-button" id="nextButton">></button>
+            <button class="toc-button" id="tocButton">☰</button>
+            <button class="close-reading" id="closeReading">&times;</button>
+            <div class="reading-footer">
+                <div id="bookProgressText">已阅读 0%</div>
+                <div class="progress-bar">
+                    <div class="progress" id="bookProgress"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-of-contents" id="toc">
+        <div class="toc-header">
+            <h3 class="toc-title" id="tocTitle">章节目录 - 地球往事</h3>
+            <button class="toc-close" id="tocClose">&times;</button>
+        </div>
+        <ul class="toc-list" id="tocList">
+            <!-- 章节目录将通过JS动态生成 -->
+        </ul>
+    </div>
+    <script>
+        // 配置PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+        
+        // 三体三部曲的章节目录数据
+        const bookChapters = {
+            '地球往事.pdf': [
+                { title: '科学边界', pages: [1, 30] },
+                { title: '台球', pages: [31, 50] },
+                { title: '射手和农场主', pages: [51, 70] },
+                { title: '三体', pages: [71, 120] },
+                { title: '叶文洁', pages: [121, 180] },
+                { title: '宇宙闪烁', pages: [181, 230] },
+                { title: '疯狂年代', pages: [231, 280] },
+                { title: '寂静的春天', pages: [281, 320] },
+                { title: '红岸之二', pages: [321, 370] },
+                { title: '宇宙之眼', pages: [371, 420] }
+            ],
+            '黑暗森林.pdf': [
+                { title: '咒语', pages: [1, 40] },
+                { title: '黑暗森林', pages: [41, 90] },
+                { title: '宇宙社会学', pages: [91, 140] },
+                { title: '面壁者', pages: [141, 190] },
+                { title: '执剑人', pages: [191, 240] },
+                { title: '威慑', pages: [241, 290] },
+                { title: '广播纪元', pages: [291, 340] },
+                { title: '掩体纪元', pages: [341, 390] },
+                { title: '银河纪元', pages: [391, 430] }
+            ],
+            '死神永生.pdf': [
+                { title: '地球大低谷', pages: [1, 35] },
+                { title: '威慑后', pages: [36, 80] },
+                { title: '威摄纪元最后十分钟', pages: [81, 120] },
+                { title: '掩体计划', pages: [121, 160] },
+                { title: '银河系人类', pages: [161, 200] },
+                { title: '程心', pages: [201, 240] },
+                { title: '死线', pages: [241, 280] },
+                { title: '降维打击', pages: [281, 320] },
+                { title: '归零者', pages: [321, 360] },
+                { title: '死神永生', pages: [361, 400] }
+            ]
+        };
+        
+        // 当前阅读状态
+        let pdfDoc = null;
+        let currentPage = 1;
+        let totalPages = 0;
+        let currentBook = '';
+        let isBookOpen = false;
+        let isFlipping = false;
+        
+        // DOM元素 - 修改为单页相关元素
+        const readingView = document.getElementById('readingView');
+        const bookElement = document.getElementById('book');
+        const page = document.getElementById('page');
+        const pageContent = document.getElementById('pageContent');
+        const pageNumber = document.getElementById('pageNumber');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const closeReading = document.getElementById('closeReading');
+        const tocButton = document.getElementById('tocButton');
+        const toc = document.getElementById('toc');
+        const tocClose = document.getElementById('tocClose');
+        const tocList = document.getElementById('tocList');
+        const tocTitle = document.getElementById('tocTitle');
+        const coverTitle = document.getElementById('coverTitle');
+        const bookProgress = document.getElementById('bookProgress');
+        const bookProgressText = document.getElementById('bookProgressText');
+        
+        // 显示阅读视图
+        function showReadingView(book) {
+            currentBook = book;
+            readingView.style.display = 'block';
+            // 设置书名
+            let bookTitle = '';
+            switch(book) {
+                case '地球往事.pdf':
+                    bookTitle = '地球往事';
+                    coverTitle.textContent = '地球往事';
+                    tocTitle.textContent = '章节目录 - 地球往事';
+                    break;
+                case '黑暗森林.pdf':
+                    bookTitle = '黑暗森林';
+                    coverTitle.textContent = '黑暗森林';
+                    tocTitle.textContent = '章节目录 - 黑暗森林';
+                    break;
+                case '死神永生.pdf':
+                    bookTitle = '死神永生';
+                    coverTitle.textContent = '死神永生';
+                    tocTitle.textContent = '章节目录 - 死神永生';
+                    break;
+            }
+            // 显示章节目录
+            renderTableOfContents(book);
+            // 重置阅读状态
+            currentPage = 1;
+            isBookOpen = false;
+            isFlipping = false;
+            // 重置翻页状态
+            page.className = 'page';
+            // 显示封面
+            document.querySelector('.book-cover-front').style.display = 'flex';
+            page.style.display = 'none';
+            // 加载PDF
+            loadPdf(book);
+        }
+        
+        // 渲染章节目录
+        function renderTableOfContents(book) {
+            tocList.innerHTML = '';
+            const chapters = bookChapters[book] || [];
+            chapters.forEach((chapter, index) => {
+                const li = document.createElement('li');
+                const chapterDiv = document.createElement('div');
+                chapterDiv.className = 'toc-chapter';
+                chapterDiv.textContent = `${index + 1}. ${chapter.title}`;
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'toc-section';
+                sectionDiv.textContent = `第 ${chapter.pages[0]} - ${chapter.pages[1]} 页`;
+                const a = document.createElement('a');
+                a.href = '#';
+                a.appendChild(chapterDiv);
+                a.appendChild(sectionDiv);
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    goToPage(chapter.pages[0]);
+                    toc.classList.remove('open');
+                });
+                li.appendChild(a);
+                tocList.appendChild(li);
+            });
+        }
+        
+        // 加载PDF
+        function loadPdf(url) {
+            pdfDoc = null;
+            // 显示加载指示器
+            pageContent.innerHTML = '<div class="loading">加载PDF内容</div>';
+            // 加载PDF
+            pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                pdfDoc = pdf;
+                totalPages = pdf.numPages;
+                // 渲染第一页
+                renderPage(1);
+                // 更新进度
+                updateProgress();
+            }).catch(function(error) {
+                console.error('Error loading PDF:', error);
+                pageContent.innerHTML = `<div style="color: #8b4513; text-align: center; padding: 20px;">
+                    <h3>加载PDF时出错</h3>
+                    <p>请检查PDF文件是否存在或网络连接是否正常</p>
+                    <p style="margin-top: 15px; font-size: 0.9rem;">错误: ${error.message}</p>
+                </div>`;
+            });
+        }
+        
+        // 渲染页面 - 修改为单页渲染
+        function renderPage(num) {
+            if (!pdfDoc) return;
+            // 确保页码在有效范围内
+            num = Math.max(1, Math.min(num, totalPages));
+            // 更新页码显示
+            pageNumber.textContent = num;
+            // 清除加载指示器
+            pageContent.innerHTML = '';
+            // 渲染页面
+            pdfDoc.getPage(num).then(function(page) {
+                // 增大PDF显示比例以放大内容
+                const scale = window.innerWidth > 768 ? 2.2 : 1.8;
+                const viewport = page.getViewport({ scale: scale });
+                // 准备canvas
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                // 设置canvas样式
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
+                canvas.style.display = 'block';
+                canvas.style.margin = '0 auto';
+                // 渲染页面
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                page.render(renderContext).promise.then(function() {
+                    // 将canvas添加到页面内容
+                    pageContent.innerHTML = '';
+                    pageContent.appendChild(canvas);
+                    // 更新进度
+                    updateProgress();
+                }).catch(function(error) {
+                    console.error('Error rendering page:', error);
+                    pageContent.innerHTML = `<div style="color: #8b4513; text-align: center; padding: 20px;">
+                        <h3>渲染页面时出错</h3>
+                        <p>无法显示当前页面</p>
+                        <p style="margin-top: 15px; font-size: 0.9rem;">错误: ${error.message}</p>
+                    </div>`;
+                });
+            }).catch(function(error) {
+                console.error('Error getting page:', error);
+                pageContent.innerHTML = `<div style="color: #8b4513; text-align: center; padding: 20px;">
+                    <h3>获取页面时出错</h3>
+                    <p>无法加载当前页面</p>
+                    <p style="margin-top: 15px; font-size: 0.9rem;">错误: ${error.message}</p>
+                </div>`;
+            });
+        }
+        
+        // 更新阅读进度
+        function updateProgress() {
+            if (totalPages === 0) return;
+            const progress = (currentPage / totalPages) * 100;
+            bookProgress.style.width = `${progress}%`;
+            bookProgressText.textContent = `已阅读 ${Math.round(progress)}%`;
+        }
+        
+        // 翻页动画 - 修改为单页翻页逻辑
+        function flipPage(direction) {
+            if (isFlipping || currentPage === (direction === 'next' ? totalPages : 1)) return;
+            isFlipping = true;
+            
+            // 添加翻页动画类
+            page.classList.add('flipping');
+            
+            // 模拟翻页动画
+            setTimeout(() => {
+                if (direction === 'next') {
+                    currentPage++;
+                } else {
+                    currentPage--;
+                }
+                
+                // 渲染新页面
+                renderPage(currentPage);
+                
+                // 移除动画类
+                setTimeout(() => {
+                    page.classList.remove('flipping');
+                    isFlipping = false;
+                }, 300);
+            }, 100);
+        }
+        
+        // 跳转到指定页面 - 修改为单页跳转逻辑
+        function goToPage(num) {
+            if (!pdfDoc || num === currentPage) return;
+            // 确定翻页方向
+            const direction = num > currentPage ? 'next' : 'prev';
+            const pagesToFlip = Math.abs(num - currentPage);
+            // 递归翻页
+            function flipSequential(count) {
+                if (count <= 0) return;
+                flipPage(direction);
+                setTimeout(() => {
+                    flipSequential(count - 1);
+                }, 400);
+            }
+            flipSequential(pagesToFlip);
+        }
+        
+        // 事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            // 书籍阅读按钮
+            document.querySelectorAll('.read-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const book = this.getAttribute('data-book');
+                    showReadingView(book);
+                });
+            });
+            
+            // 打开书本（点击封面）
+            document.querySelector('.book-cover-front').addEventListener('click', function() {
+                if (isBookOpen) return;
+                isBookOpen = true;
+                this.style.display = 'none';
+                page.style.display = 'block';
+                // 确保第一页已渲染
+                if (pageContent.children.length === 0) {
+                    renderPage(1);
+                }
+            });
+            
+            // 翻页按钮
+            nextButton.addEventListener('click', function() {
+                if (currentPage < totalPages) {
+                    flipPage('next');
+                }
+            });
+            
+            prevButton.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    flipPage('prev');
+                }
+            });
+            
+            // 关闭阅读视图
+            closeReading.addEventListener('click', function() {
+                readingView.style.display = 'none';
+                pdfDoc = null;
+                pageContent.innerHTML = '<div class="loading">加载PDF内容</div>';
+            });
+            
+            // 章节目录切换
+            tocButton.addEventListener('click', function() {
+                toc.classList.add('open');
+            });
+            
+            tocClose.addEventListener('click', function() {
+                toc.classList.remove('open');
+            });
+            
+            // 点击外部区域关闭章节目录
+            document.addEventListener('click', function(e) {
+                if (!toc.contains(e.target) && 
+                    !tocButton.contains(e.target) && 
+                    toc.classList.contains('open')) {
+                    toc.classList.remove('open');
+                }
+            });
+            
+            // 添加触摸支持（移动端）
+            let touchStartX = 0;
+            bookElement.addEventListener('touchstart', function(e) {
+                touchStartX = e.touches[0].clientX;
+            });
+            
+            bookElement.addEventListener('touchend', function(e) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0 && currentPage < totalPages) {
+                        flipPage('next');
+                    } else if (diff < 0 && currentPage > 1) {
+                        flipPage('prev');
+                    }
+                }
+            });
+            
+            // 添加键盘支持
+            document.addEventListener('keydown', function(e) {
+                if (readingView.style.display === 'block') {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        if (currentPage < totalPages) flipPage('next');
+                    } else if (e.key === 'ArrowLeft') {
+                        if (currentPage > 1) flipPage('prev');
+                    } else if (e.key === 'Escape') {
+                        readingView.style.display = 'none';
+                    }
+                }
+            });
+            
+            // 添加鼠标点击翻页支持
+            bookElement.addEventListener('click', function(e) {
+                const rect = bookElement.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                
+                // 如果点击左侧区域，翻到上一页
+                if (x < rect.width / 3 && currentPage > 1) {
+                    flipPage('prev');
+                } 
+                // 如果点击右侧区域，翻到下一页
+                else if (x > rect.width * 2 / 3 && currentPage < totalPages) {
+                    flipPage('next');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
